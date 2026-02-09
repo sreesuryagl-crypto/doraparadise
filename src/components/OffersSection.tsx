@@ -1,11 +1,17 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Gift, Star, Percent } from "lucide-react";
+import { Gift, Star, Percent, CheckCircle } from "lucide-react";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const OffersSection = () => {
+  const { profile, loading } = useUserProfile();
+
   const scrollToRooms = () => {
     document.querySelector("#rooms")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const isEligible = profile?.offer_eligible === true;
+  const totalBookings = profile?.total_bookings || 0;
 
   return (
     <section id="offers" className="section-padding bg-background relative overflow-hidden">
@@ -53,15 +59,47 @@ const OffersSection = () => {
 
               <p className="text-muted-foreground font-body leading-relaxed max-w-xl mx-auto">
                 At Dora Paradise, we believe in rewarding our cherished guests. Complete your
-                second booking and unlock an exclusive <span className="text-primary font-semibold">20% discount</span> on
-                your stay — our way of saying thank you for choosing us.
+                first booking and unlock an exclusive <span className="text-primary font-semibold">20% discount</span> on
+                your second stay — our way of saying thank you for choosing us.
               </p>
+
+              {/* Progress indicator */}
+              {!loading && profile && (
+                <div className="bg-muted rounded-xl p-5 max-w-sm mx-auto">
+                  <p className="text-sm font-body text-muted-foreground mb-3">Your Loyalty Progress</p>
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="text-center">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-1 ${totalBookings >= 1 ? 'bg-gradient-gold' : 'bg-muted-foreground/20'}`}>
+                        {totalBookings >= 1 ? <CheckCircle className="w-6 h-6 text-secondary" /> : <span className="font-heading text-lg font-bold text-muted-foreground">1</span>}
+                      </div>
+                      <span className="text-xs font-body text-muted-foreground">1st Booking</span>
+                    </div>
+                    <div className={`h-1 w-16 rounded-full ${isEligible ? 'bg-gradient-gold' : 'bg-muted-foreground/20'}`} />
+                    <div className="text-center">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-1 ${isEligible ? 'bg-gradient-gold' : 'bg-muted-foreground/20'}`}>
+                        {isEligible ? <Percent className="w-5 h-5 text-secondary" /> : <span className="font-heading text-lg font-bold text-muted-foreground">2</span>}
+                      </div>
+                      <span className="text-xs font-body text-muted-foreground">20% Off!</span>
+                    </div>
+                  </div>
+                  {isEligible && (
+                    <p className="mt-3 text-sm font-body font-semibold text-primary">
+                      🎉 Congratulations! You've unlocked a 20% loyalty discount on your next booking!
+                    </p>
+                  )}
+                  {totalBookings === 0 && (
+                    <p className="mt-3 text-xs font-body text-muted-foreground">
+                      Make your first booking to start earning rewards!
+                    </p>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
                 <div className="bg-muted rounded-xl p-5 text-center">
                   <Gift className="w-6 h-6 text-primary mx-auto mb-2" />
-                  <span className="font-heading text-lg font-semibold text-foreground block">Book Twice</span>
-                  <span className="text-muted-foreground text-xs font-body">Complete 2 bookings</span>
+                  <span className="font-heading text-lg font-semibold text-foreground block">Book Once</span>
+                  <span className="text-muted-foreground text-xs font-body">Complete your 1st booking</span>
                 </div>
                 <div className="bg-muted rounded-xl p-5 text-center">
                   <Star className="w-6 h-6 text-primary mx-auto mb-2" />
@@ -71,21 +109,12 @@ const OffersSection = () => {
                 <div className="bg-muted rounded-xl p-5 text-center">
                   <Percent className="w-6 h-6 text-primary mx-auto mb-2" />
                   <span className="font-heading text-lg font-semibold text-foreground block">Save Big</span>
-                  <span className="text-muted-foreground text-xs font-body">On every future stay</span>
+                  <span className="text-muted-foreground text-xs font-body">On your 2nd stay</span>
                 </div>
               </div>
 
-              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                <p className="text-sm font-body text-foreground/80 italic">
-                  "Congratulations! You've unlocked a 20% loyalty discount on your second booking."
-                </p>
-                <p className="text-xs text-muted-foreground font-body mt-1">
-                  — Message displayed to eligible guests
-                </p>
-              </div>
-
               <Button variant="gold" size="xl" onClick={scrollToRooms}>
-                Book Now & Start Earning
+                {isEligible ? "Book Now with 20% Off!" : "Book Now & Start Earning"}
               </Button>
             </div>
           </div>
