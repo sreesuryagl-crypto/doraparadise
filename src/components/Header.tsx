@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, X, Crown } from "lucide-react";
+import { Menu, X, Crown, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -14,6 +15,7 @@ const navLinks = [
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -70,9 +72,19 @@ const Header = () => {
           <span className="text-xs text-hotel-gold-light font-body tracking-widest uppercase border border-hotel-gold/30 px-3 py-1 rounded-full">
             INR
           </span>
+          {user && (
+            <span className="text-xs text-hotel-cream/60 font-body truncate max-w-[140px]">
+              {user.email}
+            </span>
+          )}
           <Button variant="gold" size="sm" onClick={() => scrollToSection("#rooms")}>
             Book Now
           </Button>
+          {user && (
+            <Button variant="ghost" size="sm" onClick={signOut} className="text-hotel-cream/60 hover:text-hotel-gold">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -97,6 +109,11 @@ const Header = () => {
               <Button variant="gold" className="mx-4" onClick={() => scrollToSection("#rooms")}>
                 Book Now
               </Button>
+              {user && (
+                <Button variant="ghost" className="mx-4 text-hotel-cream/60 hover:text-hotel-gold" onClick={signOut}>
+                  <LogOut className="w-4 h-4 mr-2" /> Sign Out
+                </Button>
+              )}
             </div>
           </SheetContent>
         </Sheet>

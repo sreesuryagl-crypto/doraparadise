@@ -14,7 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          amount: number
+          check_in: string
+          check_out: string
+          created_at: string
+          discount_applied: boolean
+          gst_amount: number
+          guests: number
+          id: string
+          room_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          check_in: string
+          check_out: string
+          created_at?: string
+          discount_applied?: boolean
+          gst_amount?: number
+          guests?: number
+          id?: string
+          room_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          discount_applied?: boolean
+          gst_amount?: number
+          guests?: number
+          id?: string
+          room_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          offer_eligible: boolean
+          total_bookings: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string | null
+          offer_eligible?: boolean
+          total_bookings?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          offer_eligible?: boolean
+          total_bookings?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
