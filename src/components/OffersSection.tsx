@@ -84,7 +84,7 @@ const OffersSection = () => {
                   </div>
                   {isEligible && (
                     <p className="mt-3 text-sm font-body font-semibold text-primary">
-                      🎉 20% loyalty discount is active on all your bookings! (Total: {totalBookings} bookings)
+                      🎉 20% loyalty discount is active on every bookings!
                     </p>
                   )}
                   {totalBookings === 0 && (
