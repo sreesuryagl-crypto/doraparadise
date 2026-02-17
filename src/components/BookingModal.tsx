@@ -96,7 +96,7 @@ const BookingModal = ({ room, open, onClose }: BookingModalProps) => {
 
       // 2. Increment total_bookings and set offer_eligible
       const newTotalBookings = (profile?.total_bookings || 0) + 1;
-      // User becomes eligible for 20% discount after their 1st booking (so discount applies on 2nd booking)
+      // User becomes eligible for 20% discount after their 1st booking, and it stays permanent
       const newOfferEligible = newTotalBookings >= 1;
 
       const { error: profileError } = await supabase
@@ -108,14 +108,6 @@ const BookingModal = ({ room, open, onClose }: BookingModalProps) => {
         .eq("id", user.id);
 
       if (profileError) throw profileError;
-
-      // If discount was used, reset offer_eligible so it's one-time use
-      if (isEligibleForDiscount) {
-        await supabase
-          .from("profiles")
-          .update({ offer_eligible: false })
-          .eq("id", user.id);
-      }
 
       await refreshProfile();
       setStep("success");
@@ -345,7 +337,7 @@ const BookingModal = ({ room, open, onClose }: BookingModalProps) => {
               {profile && profile.total_bookings === 1 && (
                 <div className="mt-4 bg-primary/10 border border-primary/30 rounded-lg p-3">
                   <p className="text-sm font-body font-semibold text-primary">
-                    🎁 Great news! Your next booking will include a 20% loyalty discount!
+                    🎁 Great news! All your future bookings will include a 20% loyalty discount!
                   </p>
                 </div>
               )}
