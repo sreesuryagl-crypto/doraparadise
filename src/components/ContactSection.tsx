@@ -4,17 +4,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MapPin, Phone, Mail, Send } from "lucide-react";
+import { MapPin, Phone, Mail, Send, CheckCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactSection = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent! We'll get back to you shortly.");
+    setSending(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+        body: { name, email, message },
+      });
+
+      if (error) throw error;
+
+      setSubmitted(true);
+    } catch (err: any) {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
     setName("");
     setEmail("");
     setMessage("");
@@ -99,51 +120,81 @@ const ContactSection = () => {
             </div>
           </motion.div>
 
-          {/* Contact form */}
+          {/* Contact form or success message */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <form onSubmit={handleSubmit} className="bg-hotel-dark-lighter border border-hotel-gold/10 rounded-xl p-6 md:p-8 space-y-5">
-              <div className="space-y-2">
-                <Label className="font-body text-sm text-hotel-cream/80">Your Name</Label>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full name"
-                  required
-                  className="bg-hotel-dark border-hotel-gold/20 text-hotel-cream placeholder:text-hotel-cream/30 focus:border-hotel-gold"
-                />
+            {submitted ? (
+              <div className="bg-hotel-dark-lighter border border-hotel-gold/10 rounded-xl p-6 md:p-8 text-center space-y-6">
+                <div className="w-20 h-20 bg-hotel-gold/10 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle className="w-10 h-10 text-hotel-gold" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-xl font-semibold text-hotel-cream mb-3">
+                    Thank you for contacting us!
+                  </h3>
+                  <p className="text-hotel-cream/70 font-body text-sm leading-relaxed">
+                    We have received your message. Our team will get back to you within 24 hours.
+                  </p>
+                </div>
+                <div className="bg-hotel-dark border border-hotel-gold/20 rounded-lg p-4 text-left space-y-2">
+                  <p className="text-hotel-cream/50 font-body text-xs uppercase tracking-wider mb-2">
+                    Confirmation sent to
+                  </p>
+                  <p className="text-hotel-cream font-body text-sm font-medium">{email}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  className="text-hotel-gold hover:text-hotel-cream"
+                  onClick={handleReset}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Send Another Message
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label className="font-body text-sm text-hotel-cream/80">Email Address</Label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@email.com"
-                  required
-                  className="bg-hotel-dark border-hotel-gold/20 text-hotel-cream placeholder:text-hotel-cream/30 focus:border-hotel-gold"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="font-body text-sm text-hotel-cream/80">Message</Label>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="How can we help you?"
-                  required
-                  rows={5}
-                  className="bg-hotel-dark border-hotel-gold/20 text-hotel-cream placeholder:text-hotel-cream/30 focus:border-hotel-gold resize-none"
-                />
-              </div>
-              <Button variant="gold" size="lg" className="w-full" type="submit">
-                <Send className="w-4 h-4 mr-2" />
-                Send Message
-              </Button>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="bg-hotel-dark-lighter border border-hotel-gold/10 rounded-xl p-6 md:p-8 space-y-5">
+                <div className="space-y-2">
+                  <Label className="font-body text-sm text-hotel-cream/80">Your Name</Label>
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Full name"
+                    required
+                    className="bg-hotel-dark border-hotel-gold/20 text-hotel-cream placeholder:text-hotel-cream/30 focus:border-hotel-gold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-body text-sm text-hotel-cream/80">Email Address</Label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@email.com"
+                    required
+                    className="bg-hotel-dark border-hotel-gold/20 text-hotel-cream placeholder:text-hotel-cream/30 focus:border-hotel-gold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-body text-sm text-hotel-cream/80">Message</Label>
+                  <Textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="How can we help you?"
+                    required
+                    rows={5}
+                    className="bg-hotel-dark border-hotel-gold/20 text-hotel-cream placeholder:text-hotel-cream/30 focus:border-hotel-gold resize-none"
+                  />
+                </div>
+                <Button variant="gold" size="lg" className="w-full" type="submit" disabled={sending}>
+                  <Send className="w-4 h-4 mr-2" />
+                  {sending ? "Sending..." : "Send Message"}
+                </Button>
+              </form>
+            )}
           </motion.div>
         </div>
       </div>

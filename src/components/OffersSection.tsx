@@ -60,7 +60,7 @@ const OffersSection = () => {
               <p className="text-muted-foreground font-body leading-relaxed max-w-xl mx-auto">
                 At Dora Paradise, we believe in rewarding our cherished guests. Complete your
                 first booking and unlock an exclusive <span className="text-primary font-semibold">20% discount</span> on
-                your second stay — our way of saying thank you for choosing us.
+                every future stay — our way of saying thank you for choosing us.
               </p>
 
               {/* Progress indicator */}
@@ -84,7 +84,7 @@ const OffersSection = () => {
                   </div>
                   {isEligible && (
                     <p className="mt-3 text-sm font-body font-semibold text-primary">
-                      🎉 Congratulations! You've unlocked a 20% loyalty discount on your next booking!
+                      🎉 20% loyalty discount is active on all your bookings! (Total: {totalBookings} bookings)
                     </p>
                   )}
                   {totalBookings === 0 && (
@@ -109,7 +109,7 @@ const OffersSection = () => {
                 <div className="bg-muted rounded-xl p-5 text-center">
                   <Percent className="w-6 h-6 text-primary mx-auto mb-2" />
                   <span className="font-heading text-lg font-semibold text-foreground block">Save Big</span>
-                  <span className="text-muted-foreground text-xs font-body">On your 2nd stay</span>
+                  <span className="text-muted-foreground text-xs font-body">On every future stay</span>
                 </div>
               </div>
 
