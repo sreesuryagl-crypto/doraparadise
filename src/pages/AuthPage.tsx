@@ -38,7 +38,8 @@ const AuthPage = () => {
         toast.success("Account created! Please check your email to verify your account.");
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      console.error("Auth error:", error);
+      toast.error("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }

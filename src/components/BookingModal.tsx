@@ -95,7 +95,8 @@ const BookingModal = ({ room, open, onClose }: BookingModalProps) => {
       await refreshProfile();
       setStep("success");
     } catch (error: any) {
-      toast.error(error.message || "Booking failed. Please try again.");
+      console.error("Booking error:", error);
+      toast.error("Booking failed. Please try again.");
     } finally {
       setPaying(false);
     }
