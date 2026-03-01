@@ -39,7 +39,21 @@ const AuthPage = () => {
       }
     } catch (error: any) {
       console.error("Auth error:", error);
-      toast.error("An error occurred. Please try again.");
+      // Show user-friendly messages for common auth errors
+      const msg = error?.message || "";
+      if (msg.includes("Invalid login credentials")) {
+        toast.error("Invalid email or password. Please try again.");
+      } else if (msg.includes("Email not confirmed")) {
+        toast.error("Please verify your email before signing in.");
+      } else if (msg.includes("User already registered")) {
+        toast.error("An account with this email already exists. Try signing in.");
+      } else if (msg.includes("Password should be")) {
+        toast.error("Password must be at least 6 characters.");
+      } else if (msg.includes("rate limit") || msg.includes("too many")) {
+        toast.error("Too many attempts. Please wait a moment and try again.");
+      } else {
+        toast.error("An error occurred. Please check your connection and try again.");
+      }
     } finally {
       setLoading(false);
     }
