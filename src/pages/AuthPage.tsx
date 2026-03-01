@@ -38,7 +38,7 @@ const AuthPage = () => {
         toast.success("Account created! Please check your email to verify your account.");
       }
     } catch (error: any) {
-      console.error("Auth error:", error);
+      if (import.meta.env.DEV) console.error("Auth error:", error);
       // Show user-friendly messages for common auth errors
       const msg = error?.message || "";
       if (msg.includes("Invalid login credentials")) {
