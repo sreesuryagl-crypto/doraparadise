@@ -79,35 +79,18 @@ const BookingModal = ({ room, open, onClose }: BookingModalProps) => {
     setPaying(true);
 
     try {
-      // 1. Insert booking record
-      const { error: bookingError } = await supabase.from("bookings").insert({
-        user_id: user.id,
-        room_type: activeRoom.name,
-        amount: totalAmount,
-        gst_amount: gst,
-        discount_applied: isEligibleForDiscount,
-        check_in: checkIn,
-        check_out: checkOut,
-        guests: parseInt(guests),
-        status: "confirmed",
+      // Use server-side edge function for secure pricing calculation
+      const { data, error } = await supabase.functions.invoke("create-booking", {
+        body: {
+          room_type: activeRoom.name,
+          check_in: checkIn,
+          check_out: checkOut,
+          guests: parseInt(guests),
+        },
       });
 
-      if (bookingError) throw bookingError;
-
-      // 2. Increment total_bookings and set offer_eligible
-      const newTotalBookings = (profile?.total_bookings || 0) + 1;
-      // User becomes eligible for 20% discount after their 1st booking, and it stays permanent
-      const newOfferEligible = newTotalBookings >= 1;
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          total_bookings: newTotalBookings,
-          offer_eligible: newOfferEligible,
-        })
-        .eq("id", user.id);
-
-      if (profileError) throw profileError;
+      if (error) throw new Error("Booking failed. Please try again.");
+      if (data?.error) throw new Error(data.error);
 
       await refreshProfile();
       setStep("success");
