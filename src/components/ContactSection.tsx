@@ -28,7 +28,7 @@ const ContactSection = () => {
 
       setSubmitted(true);
     } catch (err: any) {
-      console.error("Contact form error:", err);
+      if (import.meta.env.DEV) console.error("Contact form error:", err);
       toast.error("Failed to send message. Please try again.");
     } finally {
       setSending(false);
